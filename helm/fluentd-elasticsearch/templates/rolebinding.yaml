@@ -4,9 +4,6 @@ apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
 metadata:
   name: {{ template "fluentd-elasticsearch.fullname" . }}
-{{- if .Values.namespace }}
-  namespace: {{ .Values.namespace | quote }}
-{{- end }}
   labels:
     app.kubernetes.io/name: {{ include "fluentd-elasticsearch.name" . }}
     helm.sh/chart: {{ include "fluentd-elasticsearch.chart" . }}
@@ -21,9 +18,5 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: {{ template "fluentd-elasticsearch.fullname" . }}
-{{- if .Values.namespace }}
-  namespace: {{ .Values.namespace | quote }}
-{{- else -}}
   namespace: {{ .Release.Namespace }}
-{{- end }}
 {{- end }}

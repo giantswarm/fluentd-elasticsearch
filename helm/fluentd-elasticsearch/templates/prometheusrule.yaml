@@ -3,9 +3,6 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: {{ template "fluentd-elasticsearch.fullname" . }}
-{{- if .Values.namespace }}
-  namespace: {{ .Values.namespace | quote }}
-{{- end }}
   labels:
     app.kubernetes.io/name: {{ include "fluentd-elasticsearch.name" . }}
     helm.sh/chart: {{ include "fluentd-elasticsearch.chart" . }}

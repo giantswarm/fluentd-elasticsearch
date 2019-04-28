@@ -68,7 +68,7 @@ serviceAccount:
 ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
 ##
 podSecurityPolicy:
-  enabled: false
+  enabled: true
   annotations: {}
     ## Specify pod annotations
     ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor

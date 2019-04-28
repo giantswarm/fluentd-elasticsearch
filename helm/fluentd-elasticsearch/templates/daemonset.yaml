@@ -2,9 +2,6 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: {{ include "fluentd-elasticsearch.fullname" . }}
-{{- if .Values.namespace }}
-  namespace: {{ .Values.namespace | quote }}
-{{- end }}
   labels:
     app.kubernetes.io/name: {{ include "fluentd-elasticsearch.name" . }}
     helm.sh/chart: {{ include "fluentd-elasticsearch.chart" . }}

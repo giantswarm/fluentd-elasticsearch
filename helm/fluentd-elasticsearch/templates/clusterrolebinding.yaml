@@ -13,11 +13,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: {{ if .Values.serviceAccount.name }}{{ .Values.serviceAccount.name }}{{ else }}{{ include "fluentd-elasticsearch.fullname" . }}{{ end }}
-{{- if .Values.namespace }}
-  namespace: {{ .Values.namespace | quote }}
-{{- else -}}
   namespace: {{ .Release.Namespace }}
-{{- end }}
 roleRef:
   kind: ClusterRole
   name: {{ include "fluentd-elasticsearch.fullname" . }}
