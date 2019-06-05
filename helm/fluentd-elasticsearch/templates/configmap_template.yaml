@@ -11,4 +11,4 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
   {{ .Values.configuration.template.filename }}: |-
-{{ toJson .Values.configuration.template.content | indent 4 }}
+{{ .Values.configuration.template.content | indent 4 }}
