@@ -107,6 +107,8 @@ spec:
         - name: libsystemddir
           mountPath: /host/lib
           readOnly: true
+        - name: config-es
+          mountPath: {{ .Values.configuration.template.filepath }}{{ .Values.configuration.template.filename }}
         - name: config-volume
           mountPath: /etc/fluent/config.d
 {{- if .Values.extraVolumeMounts }}
@@ -166,6 +168,9 @@ spec:
       - name: libsystemddir
         hostPath:
           path: /usr/lib64
+      - name: config-es
+        configMap:
+          name: {{ include "fluentd-elasticsearch.fullname" . }}"-template"
       - name: config-volume
         configMap:
           name: {{ include "fluentd-elasticsearch.fullname" . }}
