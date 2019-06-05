@@ -170,7 +170,7 @@ spec:
           path: /usr/lib64
       - name: config-es
         configMap:
-          name: {{ include "fluentd-elasticsearch.fullname" . }}"-template"
+          name: elasticsearch-template
       - name: config-volume
         configMap:
           name: {{ include "fluentd-elasticsearch.fullname" . }}
