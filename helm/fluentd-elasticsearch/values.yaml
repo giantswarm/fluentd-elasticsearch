@@ -139,17 +139,7 @@ configuration:
     filename: "es_mapping.json"
     filepath: "/fluentd/etc/"
     overwrite: true
-    content: |-
-      {
-        "template": "logging",
-        "mappings": {
-          "_default_": {
-            "dynamic_templates": [],
-            "properties" : {
-            }
-          }
-        }
-      }
+    content: '{"template":"logging","mappings":{"_default_":{"dynamic_templates":[],"properties":{}}}}'
 
 configMaps:
   system.conf: |-
