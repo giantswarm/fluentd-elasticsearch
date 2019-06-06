@@ -108,7 +108,7 @@ spec:
           mountPath: /host/lib
           readOnly: true
         - name: config-es
-          mountPath: {{ .Values.configuration.template.filepath }}{{ .Values.configuration.template.filename }}
+          mountPath: {{ .Values.configuration.template.filepath }}
         - name: config-volume
           mountPath: /etc/fluent/config.d
 {{- if .Values.extraVolumeMounts }}
