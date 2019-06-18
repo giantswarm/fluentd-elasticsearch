@@ -109,6 +109,8 @@ spec:
           readOnly: true
         - name: config-es
           mountPath: {{ .Values.configuration.template.filepath }}
+        - name: json-field-plugin
+          mountPath: {{ .Values.configuration.plugin.filepath }}
         - name: config-volume
           mountPath: /etc/fluent/config.d
 {{- if .Values.extraVolumeMounts }}
@@ -171,6 +173,10 @@ spec:
       - name: config-es
         configMap:
           name: elasticsearch-template
+      - name: json-field-plugin
+        configMap:
+          name: plugin-template
+          defaultMode: 0744
       - name: config-volume
         configMap:
           name: {{ include "fluentd-elasticsearch.fullname" . }}
