@@ -145,19 +145,6 @@ configuration:
     filepath: "/etc/fluent/plugin/"
     content: |
       module FluentExt
-        class GenericParser
-          include Fluent::Configurable
-          config_param :time_key, :string, :default => 'time'
-          config_param :time_format, :string, :default => nil
-          config_param :time_parse, :bool, :default => true
-          attr_accessor :log
-          def initialize(logger)
-            super()
-            @cache1_key = nil
-            @cache1_time = nil
-            @cache2_key = nil
-            @cache2_time = nil
-            @log = logger
       end
 
 configMaps:
