@@ -140,6 +140,12 @@ configuration:
     filepath: "/fluentd/etc/"
     overwrite: true
     content: '{"template":"logging","mappings":{"_default_":{"dynamic_templates":[],"properties":{}}}}'
+  plugin:
+    filename: "filter_parser_json_field.rb"
+    filepath: "/etc/fluent/plugin/"
+    content: |
+      module FluentExt
+      end
 
 configMaps:
   system.conf: |-
