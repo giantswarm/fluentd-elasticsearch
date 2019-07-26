@@ -1,142 +1,23 @@
-image:
-  repository: gcr.io/fluentd-elasticsearch/fluentd
-## Specify an imagePullPolicy (Required)
-## It's recommended to change this to 'Always' if the image tag is 'latest'
-## ref: http://kubernetes.io/docs/user-guide/images/#updating-images
-  tag: v2.5.1
-  pullPolicy: IfNotPresent
-  ## Optionally specify an array of imagePullSecrets.
-  ## Secrets must be manually created in the namespace.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-  ##
-  # pullSecrets:
-  #   - myRegistrKeySecretName
-
-# Specify to use specific priorityClass for pods
-# ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
-# If a Pod cannot be scheduled, the scheduler tries to preempt (evict) lower priority
-# Pods to make scheduling of the pending Pod possible.
-priorityClassName: ""
-
-## Configure resource requests and limits
-## ref: http://kubernetes.io/docs/user-guide/compute-resources/
-##
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 500Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 200Mi
-
-elasticsearch:
-  host: 'elasticsearch-client'
-  port: 9200
-  scheme: 'http'
-  ssl_version: TLSv1_2
-  user: ""
-  password: ""
-  buffer_chunk_limit: 2M
-  buffer_queue_limit: 8
-  logstash_prefix: 'logstash'
-
-# If you want to add custom environment variables, use the env dict
-# You can then reference these in your config file e.g.:
-#     user "#{ENV['OUTPUT_USER']}"
-env:
-  # OUTPUT_USER: my_user
-  # LIVENESS_THRESHOLD_SECONDS: 300
-  # STUCK_THRESHOLD_SECONDS: 900
-
-# If you want to add custom environment variables from secrets, use the secret list
-secret:
-# - name: ELASTICSEARCH_PASSWORD
-#   secret_name: elasticsearch
-#   secret_key: password
-
-rbac:
-  create: true
-
-serviceAccount:
-  # Specifies whether a ServiceAccount should be created
-  create: true
-  # The name of the ServiceAccount to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
-## Specify if a Pod Security Policy for node-exporter must be created
-## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
-##
-podSecurityPolicy:
-  enabled: true
-  annotations: {}
-    ## Specify pod annotations
-    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor
-    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#seccomp
-    ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#sysctl
-    ##
-    # seccomp.security.alpha.kubernetes.io/allowedProfileNames: '*'
-    # seccomp.security.alpha.kubernetes.io/defaultProfileName: 'docker/default'
-    # apparmor.security.beta.kubernetes.io/defaultProfileName: 'runtime/default'
-
-livenessProbe:
-  enabled: true
-
-annotations: {}
-
-podAnnotations: {}
-  # prometheus.io/scrape: "true"
-  # prometheus.io/port: "24231"
-
-## DaemonSet update strategy
-## Ref: https://kubernetes.io/docs/tasks/manage-daemon/update-daemon-set/
-updateStrategy:
-  type: RollingUpdate
-
-tolerations: {}
-  # - key: node-role.kubernetes.io/master
-  #   operator: Exists
-  #   effect: NoSchedule
-
-affinity: {}
-  # nodeAffinity:
-  #   requiredDuringSchedulingIgnoredDuringExecution:
-  #     nodeSelectorTerms:
-  #     - matchExpressions:
-  #       - key: node-role.kubernetes.io/master
-  #         operator: DoesNotExist
-
-nodeSelector: {}
-
-service: {}
-  # type: ClusterIP
-  # ports:
-  #   - name: "monitor-agent"
-  #     port: 24231
-
-serviceMonitor:
-  ## If true, a ServiceMonitor CRD is created for a prometheus operator
-  ## https://github.com/coreos/prometheus-operator
-  ##
-  enabled: false
-  interval: 10s
-  path: /metrics
-  labels: {}
-
-prometheusRule:
-  ## If true, a PrometheusRule CRD is created for a prometheus operator
-  ## https://github.com/coreos/prometheus-operator
-  ##
-  enabled: false
-  prometheusNamespace: monitoring
-  labels: {}
-  #  role: alert-rules
-
-configMaps:
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "fluentd-elasticsearch.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "fluentd-elasticsearch.name" . }}
+    helm.sh/chart: {{ include "fluentd-elasticsearch.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    kubernetes.io/cluster-service: "true"
+    addonmanager.kubernetes.io/mode: Reconcile
+data:
+{{- if .Values.configMaps.useDefaults.systemConf }}
   system.conf: |-
     <system>
       root_dir /tmp/fluentd-buffers/
     </system>
+{{- end }}
+
+{{- if .Values.configMaps.useDefaults.containersInputConf }}
   containers.input.conf: |-
     # This configuration file for Fluentd / td-agent is used
     # to watch changes to Docker log files. The kubelet creates symlinks that
@@ -300,7 +181,9 @@ configMaps:
         </pattern>
       </parse>
     </filter>
+{{- end }}
 
+{{- if .Values.configMaps.useDefaults.systemInputConf }}
   system.input.conf: |-
     # Example:
     # 2015-12-21 23:17:22,066 [salt.state       ][INFO    ] Completed state [net.ipv4.ip_forward] at time 23:17:22.066081
@@ -477,7 +360,7 @@ configMaps:
     <source>
       @id journald-container-runtime
       @type systemd
-      matches [{ "_SYSTEMD_UNIT": "{{ fluentd_container_runtime_service }}.service" }]
+      matches [{ "_SYSTEMD_UNIT": "{{"{{ fluentd_container_runtime_service }}"}}.service" }]
       <storage>
         @type local
         persistent true
@@ -529,14 +412,18 @@ configMaps:
       read_from_head true
       tag kernel
     </source>
+{{- end }}
 
+{{- if .Values.configMaps.useDefaults.forwardInputConf }}
   forward.input.conf: |-
     # Takes the messages sent over TCP
     <source>
       @id forward
       @type forward
     </source>
+{{- end }}
 
+{{- if .Values.configMaps.useDefaults.monitoringConf }}
   monitoring.conf: |-
     # Prometheus Exporter Plugin
     # input plugin that exports metrics
@@ -576,21 +463,25 @@ configMaps:
         host ${hostname}
       </labels>
     </source>
+{{- end }}
 
+{{- if .Values.configMaps.useDefaults.outputConf }}
   output.conf: |-
     <match **>
       @id elasticsearch
       @type elasticsearch
-      @log_level info
+      @log_level "#{ENV['OUTPUT_LOG_LEVEL']}"
       include_tag_key true
       type_name _doc
       host "#{ENV['OUTPUT_HOST']}"
       port "#{ENV['OUTPUT_PORT']}"
       scheme "#{ENV['OUTPUT_SCHEME']}"
+      ssl_verify "#{ENV['OUTPUT_SSL_VERIFY']}"
       ssl_version "#{ENV['OUTPUT_SSL_VERSION']}"
-      ssl_verify true
+{{- if .Values.elasticsearch.auth.enabled }}
       user "#{ENV['OUTPUT_USER']}"
       password "#{ENV['OUTPUT_PASSWORD']}"
+{{- end }}
       logstash_format true
       logstash_prefix "#{ENV['LOGSTASH_PREFIX']}"
       reconnect_on_error true
@@ -608,14 +499,9 @@ configMaps:
         overflow_action block
       </buffer>
     </match>
+{{- end }}
 
-
-# extraVolumes:
-#   - name: es-certs
-#     secret:
-#       defaultMode: 420
-#       secretName: es-certs
-# extraVolumeMounts:
-#   - name: es-certs
-#     mountPath: /certs
-#     readOnly: true
+{{- range $key, $value := .Values.extraConfigMaps }}
+  {{ $key }}: |-
+{{ $value | indent 4 }}
+{{- end }}
