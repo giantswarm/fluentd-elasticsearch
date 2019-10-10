@@ -36,13 +36,13 @@ hostLogDir:
 ## Configure resource requests and limits
 ## ref: http://kubernetes.io/docs/user-guide/compute-resources/
 ##
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 500Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 200Mi
+resources:
+  limits:
+    cpu: 100m
+    memory: 500Mi
+  requests:
+    cpu: 100m
+    memory: 200Mi
 
 elasticsearch:
   auth:
@@ -51,7 +51,7 @@ elasticsearch:
     password: "yourPass"
   bufferChunkLimit: "2M"
   bufferQueueLimit: 8
-  host: "elasticsearch-client"
+  host: "elasticsearch-master"
   logstashPrefix: "logstash"
   port: 9200
   path: ""
@@ -99,7 +99,7 @@ serviceAccount:
 ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
 ##
 podSecurityPolicy:
-  enabled: false
+  enabled: true
   annotations: {}
     ## Specify pod annotations
     ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/#apparmor
