@@ -1,15 +1,15 @@
 version: 2.1
 orbs:
-  architect: giantswarm/architect@0.4.3
+  architect: giantswarm/architect@0.8.5
 
 workflows:
   package-and-push-chart-on-tag:
     jobs:
       - architect/push-to-app-catalog:
-          name: "package and push fluentd-elasticsearch chart"
-          app_catalog: "giantswarm-incubator-catalog"
-          app_catalog_test: "giantswarm-incubator-test-catalog"
-          chart: "fluentd-elasticsearch"
+          name: "package and push fluentd-elasticsearch-app chart"
+          app_catalog: "giantswarm-playground-catalog"
+          app_catalog_test: "giantswarm-playground-test-catalog"
+          chart: "fluentd-elasticsearch-app"
           # Trigger job on git tag.
           filters:
             tags:
