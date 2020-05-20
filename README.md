@@ -1,17 +1,5 @@
-# HELM Fluentd Chart
+[![CircleCI](https://circleci.com/gh/giantswarm/fluentd-elasticsearch-app.svg?style=shield)](https://circleci.com/gh/giantswarm/fluentd-elasticsearch-app)
 
-### Start your development environment if you have not started already
+# fluentd-elasticsearch-app chart
 
-> helm init —client-only
-
-> helm repo add sample-catalog https://giantswarm.github.com/sample-catalog
-
-### Modify and test the new chart
-
-### Add git tag
-> git tat vx.x.x
-
-### Package the chart and attach it to the github release
-> helm package helm/fluentd-elasticsearch
-
-## Create github release with compressed chart
+Based on the awesome work of kiwigrid on their [fluentd-elasticsearch](https://github.com/kiwigrid/helm-charts/tree/master/charts/fluentd-elasticsearch) Chart.
