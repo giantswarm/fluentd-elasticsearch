@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/giantswarm/fluentd-elasticsearch-app.svg?style=shield)](https://circleci.com/gh/giantswarm/fluentd-elasticsearch-app)
+[![Docker Repository on Quay](https://quay.io/repository/giantswarm/fluentd-elasticsearch/status)](https://quay.io/repository/giantswarm/fluentd-elasticsearch)
 
 # fluentd-elasticsearch-app chart
 
